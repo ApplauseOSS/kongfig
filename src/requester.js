@@ -5,7 +5,7 @@ let headers = {};
 const addHeader = (name, value) => { headers[name] = value };
 const clearHeaders = () => { headers = {} };
 
-const get = (uri) => {
+const get = (uri, pageSize) => {
     const options = {
         method: 'GET',
         headers: {
@@ -14,7 +14,11 @@ const get = (uri) => {
         }
     };
 
-    return request(uri, options);
+    var modifiedUri = uri;
+    if (pageSize) {
+      modifiedUri = uri + '/?size=' + pageSize;
+    }
+    return request(modifiedUri, options);
 };
 
 const request = (uri, opts) => {

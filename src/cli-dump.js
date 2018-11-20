@@ -14,6 +14,7 @@ program
     .option('--host <value>', 'Kong admin host (default: localhost:8001)', 'localhost:8001')
     .option('--https', 'Use https for admin API requests')
     .option('--ignore-consumers', 'Ignore consumers in kong')
+    .option('--page-size <value>', 'Page size for get requests', null, 100)
     .option('--header [value]', 'Custom headers to be added to all requests', (nextHeader, headers) => { headers.push(nextHeader); return headers }, [])
     .option('--credential-schema <value>', 'Add custom auth plugin in <name>:<key> format. Ex: custom_jwt:key. Repeat option for multiple custom plugins', repeatableOptionCallback, [])
     .parse(process.argv);
@@ -31,12 +32,13 @@ try {
 }
 
 let headers = program.header || [];
+let https = program.https || false;
 
 headers
     .map((h) => h.split(':'))
     .forEach(([name, value]) => requester.addHeader(name, value));
 
-readKongApi(adminApi({ host: program.host, https: program.https, ignoreConsumers: program.ignoreConsumers }))
+readKongApi(adminApi({ host: program.host, https: https, ignoreConsumers: program.ignoreConsumers, pageSize: program.pageSize }))
     .then(results => {
         return {host: program.host, https: program.https, headers, ...results};
     })

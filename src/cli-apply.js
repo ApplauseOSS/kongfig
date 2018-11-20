@@ -15,6 +15,7 @@ program
     .option('--https', 'Use https for admin API requests')
     .option('--no-cache', 'Do not cache kong state in memory')
     .option('--ignore-consumers', 'Do not sync consumers')
+    .option('--page-size <value>', 'Page size for get requests', null, 100)
     .option('--header [value]', 'Custom headers to be added to all requests', (nextHeader, headers) => { headers.push(nextHeader); return headers }, [])
     .option('--credential-schema <value>', 'Add custom auth plugin in <name>:<key> format. Ex: custom_jwt:key. Repeat option for multiple custom plugins', repeatableOptionCallback, [])
     .parse(process.argv);
@@ -68,7 +69,7 @@ else {
 
 console.log(`Apply config to ${host}`.green);
 
-execute(config, adminApi({host, https, ignoreConsumers, cache}), screenLogger)
+execute(config, adminApi({host, https, ignoreConsumers, cache, pageSize: program.pageSize}), screenLogger)
   .catch(error => {
       console.error(`${error}`.red, '\n', error.stack);
       process.exit(1);
